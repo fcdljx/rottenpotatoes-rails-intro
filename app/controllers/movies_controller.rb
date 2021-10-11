@@ -14,6 +14,7 @@ class MoviesController < ApplicationController
 
     if params[:ratings] 
       @ratings_to_show = params[:ratings].keys
+      @rating_hash = Hash[@ratings_to_show.collect{|key| [key, '1']}]
       
       if params[:sortBy]
          @movies = Movie.with_ratings(params[:ratings].keys).order(params[:sortBy])
@@ -33,8 +34,8 @@ class MoviesController < ApplicationController
     
     if params[:sortBy] == 'title'
       @title_class = 'hilite'
-    else
-      @date_class = 'hilite'
+    elsif params[:sortBy] == 'release_date'
+      @date_class = 'hilite' 
     end
     
   end
