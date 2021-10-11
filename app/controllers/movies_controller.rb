@@ -28,7 +28,7 @@ class MoviesController < ApplicationController
       end
 
     else 
-      @ratings_to_show = []
+      @ratings_to_show = @all_ratings
       
       if params[:sortBy]
          
