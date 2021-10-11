@@ -14,13 +14,29 @@ class MoviesController < ApplicationController
 
     if params[:ratings] 
       @ratings_to_show = params[:ratings].keys
-      @movies = Movie.with_ratings(params[:ratings].keys)
+      
+      if params[:sortBy]
+         @movies = Movie.with_ratings(params[:ratings].keys).order(params[:sortBy])
+      else
+         @movies = Movie.with_ratings(params[:ratings].keys)
+      end
 
     else 
       @ratings_to_show = []
-      @movies = Movie.with_ratings([])
-    
+      
+      if params[:sortBy]
+         @movies = Movie.with_ratings([]).order(params[:sortBy])
+      else
+         @movies = Movie.with_ratings([])
+      end
     end
+    
+    if params[:sortBy] == 'title'
+      @title_class = 'hilite'
+    else
+      @date_class = 'hilite'
+    end
+    
   end
 
   def new
