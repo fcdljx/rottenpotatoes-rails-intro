@@ -11,12 +11,17 @@ class MoviesController < ApplicationController
     
     @all_ratings = Movie.uniq.pluck(:rating)
     @ratings_to_show
-
+          
+    
+    
     if params[:ratings] 
       @ratings_to_show = params[:ratings].keys
       @rating_hash = Hash[@ratings_to_show.collect{|key| [key, '1']}]
+    
+      session[:ratings] = @rating_hash #!!
       
       if params[:sortBy]
+         session[:sortBy] = params[:sortBy] #!!
          @movies = Movie.with_ratings(params[:ratings].keys).order(params[:sortBy])
       else
          @movies = Movie.with_ratings(params[:ratings].keys)
@@ -26,17 +31,44 @@ class MoviesController < ApplicationController
       @ratings_to_show = []
       
       if params[:sortBy]
+         
+        session[:sortBy] = params[:sortBy] #!!
+
          @movies = Movie.with_ratings([]).order(params[:sortBy])
       else
          @movies = Movie.with_ratings([])
       end
+      
     end
+      
+    
     
     if params[:sortBy] == 'title'
       @title_class = 'hilite'
     elsif params[:sortBy] == 'release_date'
       @date_class = 'hilite' 
     end
+    
+    
+    
+    if (!params[:ratings] && !params[:sortBy] && !session.empty?)
+      if !params[:commit]
+          if (session.has_key?(:ratings) && session.has_key?(:sortBy))
+            redirect_to movies_path(:ratings=>session[:ratings], :sortBy => session[:sortBy])
+          elsif (!session.has_key?(:ratings) && session.has_key?(:sortBy))
+              redirect_to movies_path(:sortBy => session[:sortBy])
+          elsif (session.has_key?(:ratings) && !session.has_key?(:sortBy))
+              redirect_to movies_path(:ratings=>session[:ratings])
+          end
+      else 
+        session.clear
+      end
+    end
+
+    
+    
+    
+    
     
   end
 
